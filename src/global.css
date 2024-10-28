@@ -3,9 +3,17 @@
 @tailwind utilities;
 
 @layer components {
-  .component-flexbox {
-    display: flex;
-    border: 1px solid black;
-    box-shadow: 2px 2px 4px black;
-  }
+	.component-flexbox {
+		display: flex;
+		border: 1px solid white;
+		box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+	}
+
+	.component-title {
+		@apply text-xl font-bold;
+	}
+
+	.dice-block {
+		@apply relative h-9 w-9 rounded-sm border-2 border-black;
+	}
 }
