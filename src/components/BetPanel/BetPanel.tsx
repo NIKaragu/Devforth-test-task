@@ -1,4 +1,9 @@
-export const BetPanel = () => {
+type Props = {
+	handleRollClick: () => void;
+	isRolling: boolean;
+};
+
+export const BetPanel: React.FC<Props> = ({ handleRollClick, isRolling }) => {
 	return (
 		<div className="component-flexbox flex-col items-center gap-2 pb-4 pl-2 pr-2 pt-2">
 			<h3 className="component-title">Bet</h3>
@@ -7,7 +12,11 @@ export const BetPanel = () => {
 					type="text"
 					className="w-12 rounded-sm border-2 border-black bg-gradient-to-b from-slate-300 to-slate-50 pl-2 pr-2 text-center"
 				/>
-				<button className="h-8 rounded-sm border-2 border-black bg-gradient-to-b from-slate-100 to-red-300 pl-2 pr-2">
+				<button
+					className="h-8 rounded-sm border-2 border-black bg-gradient-to-b from-slate-100 to-red-300 pl-2 pr-2"
+					onClick={handleRollClick}
+          disabled={isRolling}
+				>
 					ROLL
 				</button>
 			</div>
