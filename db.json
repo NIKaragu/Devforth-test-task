@@ -1,20 +1,9 @@
 {
-  "transactions": [
-    {
-      "id": "14b6",
-      "type": "Init",
-      "value": 100
-    },
-    {
-      "id": "f532",
-      "type": "Init",
-      "value": 100
-    }
-  ],
-  "users": [
-    {
-      "id": "1",
-      "balance": 100
-    }
-  ]
+	"transactions": [],
+	"users": [
+		{
+			"id": "1",
+			"balance": 0
+		}
+	]
 }
