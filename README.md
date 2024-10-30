@@ -1,5 +1,5 @@
 ## Get started:
->- npm i
+>- npm i --legacy-peer-deps
 >- npm run json-server
 >- npm run dev
 
