@@ -1,17 +1,23 @@
-export function playRound(betAmount: number): number {
-	const outcome = Math.random();
+import { countCombos } from '../utils/helpers/countCombos';
 
-	if (outcome < 0.2) {
-		return betAmount * 5;
-	} else if (outcome < 0.4) {
-		return betAmount * 4;
-	} else if (outcome < 0.6) {
-		return betAmount * 3;
-	} else if (outcome < 0.8) {
-		return betAmount * 2;
+function generateRandomDice() {
+	const randomNumbers = [];
+
+	for (let i = 0; i < 5; i++) {
+		const randomNumber = Math.floor(Math.random() * 6) + 1;
+		randomNumbers.push(randomNumber);
 	}
 
-	return 0;
+	return randomNumbers;
+}
+
+export function playRound(betAmount: number): number {
+	const combo = countCombos(generateRandomDice());
+
+	if (combo === 1) {
+		return 0;
+	}
+	return combo * betAmount;
 }
 
 export function simulateRTP(rounds: number, multiplier: number = 3): number {
