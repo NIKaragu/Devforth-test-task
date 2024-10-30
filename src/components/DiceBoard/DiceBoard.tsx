@@ -13,7 +13,7 @@ export const DiceBoard = ({ handleReadDiceValues }: Props) => {
 				{[1, 4, 2, 5, 6].map((defaultValue, index) => (
 					<Dice
 						key={index}
-						defaultValue={defaultValue}
+						defaultValue={defaultValue as 1 | 2 | 3 | 4 | 5 | 6}
 						size={36}
 						onRoll={value => {
 							handleReadDiceValues(value);

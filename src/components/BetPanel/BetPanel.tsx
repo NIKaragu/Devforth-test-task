@@ -1,11 +1,10 @@
-import classNames from 'classnames';
 import { useEffect, useMemo, useState } from 'react';
 import { makeBet } from '../../api/api';
 import { User } from '../../utils/types/User';
 import { countWin } from '../../utils/helpers/countWin';
+import { BetErrorMessage } from '../BetErrorMessage';
 
 type Props = {
-	isRolling: boolean;
 	user: User | null;
 	diceCombo: number;
 	handleBetSuccess: () => void;
@@ -13,14 +12,14 @@ type Props = {
 };
 
 export const BetPanel: React.FC<Props> = ({
-	isRolling,
 	user,
 	diceCombo,
 	handleRollClick,
 	handleBetSuccess,
 }: Props) => {
 	const [betValue, setBetValue] = useState(0);
-	const [isBetValueError, setIsBetError] = useState(false);
+	const [isBetValueError, setIsBetValueError] = useState(false);
+	const [isBetCompleted, setIsBetCompleted] = useState(true);
 	const notEnoughMoneyError = useMemo(() => {
 		if (user) {
 			return user ? user.balance < betValue : false;
@@ -29,16 +28,16 @@ export const BetPanel: React.FC<Props> = ({
 		return false;
 	}, [betValue, user]);
 
-	const [hasBetCompleted, setHasBetCompleted] = useState(false);
-
 	const handleBet = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		if (!betValue) {
-			setIsBetError(true);
+			const rollingTime = 2000;
+
+			setIsBetValueError(true);
 			setTimeout(() => {
-				setIsBetError(false);
-			}, 2000);
+				setIsBetValueError(false);
+			}, rollingTime);
 			return;
 		}
 
@@ -46,16 +45,8 @@ export const BetPanel: React.FC<Props> = ({
 			await makeBet(betValue, user as User);
 			handleRollClick();
 			handleBetSuccess();
-			setHasBetCompleted(true);
+			setIsBetCompleted(false);
 		}
-
-		// while (diceCombo === 0) {
-		// 	if (diceCombo > 1) {
-		// 		await countWin(diceCombo, betValue, user as User);
-		// 		handleBetSuccess();
-		// 		break;
-		// 	}
-		// }
 	};
 
 	const handleBetInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,18 +59,18 @@ export const BetPanel: React.FC<Props> = ({
 
 	useEffect(() => {
 		const handleWin = async () => {
-			if (hasBetCompleted && diceCombo > 0) {
+			if (!isBetCompleted && diceCombo > 1) {
 				if (diceCombo > 1) {
 					await countWin(diceCombo, betValue, user as User);
 					handleBetSuccess();
 				}
 				setBetValue(0);
-				setHasBetCompleted(false);
+				setIsBetCompleted(true);
 			}
 		};
 
 		handleWin();
-	}, [diceCombo, hasBetCompleted, betValue, user]);
+	}, [diceCombo, isBetCompleted, betValue, user]);
 
 	return (
 		<div className="component-flexbox relative flex-col items-center gap-2 pb-4 pl-2 pr-2 pt-2">
@@ -87,7 +78,7 @@ export const BetPanel: React.FC<Props> = ({
 			<div className="flex gap-2">
 				<input
 					type="text"
-					disabled={isRolling}
+					disabled={!isBetCompleted}
 					value={betValue}
 					onChange={handleBetInput}
 					className="w-12 rounded-sm border-2 border-black bg-gradient-to-b from-slate-300 to-slate-50 pl-2 pr-2 text-center"
@@ -96,31 +87,19 @@ export const BetPanel: React.FC<Props> = ({
 					type="submit"
 					className="h-8 rounded-sm border-2 border-black bg-gradient-to-b from-slate-100 to-red-300 pl-2 pr-2"
 					onClick={handleBet}
-					disabled={isRolling || isBetValueError || notEnoughMoneyError}
+					disabled={!isBetCompleted || isBetValueError || notEnoughMoneyError}
 				>
 					ROLL
 				</button>
 			</div>
-			{isBetValueError && (
-				<div
-					className={classNames(
-						'bet-error absolute -bottom-4 w-fit text-nowrap rounded-sm bg-red-100 pl-1 pr-1 font-semibold text-red-500',
-						isBetValueError && 'bet-error-visible'
-					)}
-				>
-					Bet must be more than 0
-				</div>
-			)}
-			{notEnoughMoneyError && (
-				<div
-					className={classNames(
-						'bet-error absolute -bottom-4 w-fit text-nowrap rounded-sm bg-red-100 pl-1 pr-1 font-semibold text-red-500',
-						notEnoughMoneyError && 'bet-error-visible'
-					)}
-				>
-					Not enough money
-				</div>
-			)}
+			<BetErrorMessage
+				renderCondition={isBetValueError}
+				message="Bet must be more than 0"
+			/>
+			<BetErrorMessage
+				renderCondition={notEnoughMoneyError && isBetCompleted}
+				message="Not enough money"
+			/>
 		</div>
 	);
 };

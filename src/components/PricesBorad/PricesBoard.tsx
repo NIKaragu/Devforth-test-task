@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 
 type Props = {
-	diceCombo?: number;
+	diceCombo: number;
 };
 
 export const PricesBoard = ({ diceCombo }: Props) => {
